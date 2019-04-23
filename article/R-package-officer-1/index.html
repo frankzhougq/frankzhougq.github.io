@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          利用R撰写word，自动化文档输出 —— 抛砖引玉 - Frank | Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://www.huweihuang.com/article/R-package-officer-1/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+
+    <link rel="stylesheet" href="/css/donate.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/article_header/earth.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#R" title="R">R</a>
+                            
+                        </div>
+                        <h1>利用R撰写word，自动化文档输出 —— 抛砖引玉</h1>
+                        <h2 class="subheading">R Package officer 1</h2>
+                        <span class="meta">
+                            Posted by Frank Zhou on
+                            2019-04-23
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Frank Zhou</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1 id="package-officer利用r撰写word自动化文档输出-抛砖引玉">【package officer】利用R撰写word，自动化文档输出 —— 抛砖引玉</h1>
+<p>近日，因为朋友A工作需要，提出了一个需求：每天（或每周）都需要生成日报（周报），输出到word，但是一个个填写替换，真的很麻烦，有没有快捷的方法？</p>
+<p>例如下面的每日新闻：<br>
+<img src="https://ws4.sinaimg.cn/large/006tKfTcgy1g126aqeitxj30u00yvaf0.jpg" alt=""><br>
+或者下面的每日市场概况：<br>
+<img src="https://ws3.sinaimg.cn/large/006tKfTcgy1g126chxwpbj30u00z9wjp.jpg" alt=""><br>
+我想是不是考虑用R来完成这项工作？幸运的是，给我找到了officer这个包，专门处理word或者PowerPoint。</p>
+<p>我对需求的理解：</p>
+<ol>
+<li>如果只是搜集文字资料然后输出，本没什么难，用剪切板工具（例如Copied） + markdown就可以胜任，但是对于大部分商业公司来说，Word才是通用的文件格式，对于一份公司文档来说，可能不仅仅是对内交流的材料，也可能会作为外部文档交付给客户。其中的页眉页脚、标题文字格式、间距大小、公司Logo、目录等等style elements都有要求，在这一点上markdown就无法胜任了，需要兼顾<strong>文字搜集 + 排版</strong>两方面的需求。</li>
+<li>因此，将文字搜集 + 排版进行分离。
+<ul>
+<li>文字搜集：采用Excel表格的方式进行；以一定的规则，设定好标题等级模板，剩下来User所需要做的，就是在特定的表格内粘贴所需的文字即可。</li>
+<li>排版：交给R + package(officer)。事先设定好公司所需要的模板，资料搜集完成之后，运行程序，得到docx。</li>
+</ul>
+</li>
+</ol>
+<h1 id="package-officer介绍">Package Officer介绍</h1>
+<p>officer包能够让R user操作Word以及PowerPoint文件，可以添加图片、表格、文字到上述的文件中，而原始文档的属性以及风格都会保留。和ReporteRs相比，Officer速度更快，并且不需要rJava。作者提到：</p>
+<blockquote>
+<p>Make corporate reporting with minimum hassle<br>
+目标就是让企业报告的制作变得更加简单</p>
+</blockquote>
+<p>Github 地址：<a href="https://github.com/davidgohel/officer" target="_blank" rel="noopener">https://github.com/davidgohel/officer</a><br>
+Online documentation：<a href="https://davidgohel.github.io/officer/" target="_blank" rel="noopener">https://davidgohel.github.io/officer/</a></p>
+<p>其中主要包括了六大类型主要操作：</p>
+<ol>
+<li>添加元素</li>
+<li>光标（Cursor）操作</li>
+<li>移除操作</li>
+<li>替换操作</li>
+<li>节</li>
+<li>表格与图的注解</li>
+</ol>
+<p>下面我将以任务需求为导向，简述工作流程，对用到的操作语句给予解释。而其他的操作，感兴趣的读者可以查看文档。</p>
+<h1 id="工作流程">工作流程</h1>
+<h2 id="准备工作">准备工作</h2>
+<p>主要分为两个方面：Word 与 Excel</p>
+<h3 id="word">Word</h3>
+<p>主要是对于公司文档的样式进行检查，如果不符合标准，则进行调整。有意识统一文档格式的公司，应该员工都会有标准的word模板（dtom文件），但是我看到过太多文档格式不统一的文件了，累觉不爱，每个人都有每个人的freestyle。</p>
+<p>题外话：如果有心的读者，往后需要和word大量打交道，可以好好系统学习一下Word的排版逻辑，事半功倍。当初我也是小白，后来因为要帮导师撰写以及排版一本10万字左右的书籍，所以就花时间学习了下，真的太值了。除了对代码的支持不够好，还真没发现什么致命的缺点，排版王者不是盖的。（一不小心，成了word吹了，匿了匿了）</p>
+<p>调整也不难：</p>
+<ol>
+<li>确认自己文档的标题等级：
+<ul>
+<li><strong>保证将每一个标题都涵盖进来，做到文档的标题和样式中的标题都有对应</strong>. 不管是多少级，哪怕6级7级，都要严格有对应。之所以需要做对应，是因为有很多朋友写word习惯很差，可能很多标题层级下来，<strong>写着写着想来一个小标题，这个小标题没有用样式中的标题样式，而是直接加粗一下，就算是一个小标题了</strong>, 现在是这样没问题，后期编辑和大纲查看的时候，就有的受了。</li>
+<li>根据自身需求对每一级标题做格式的调整，<strong>这个是个性化的需求</strong></li>
+</ul>
+</li>
+<li>确认自己文档中的正文：除了标题以外的内容，都是正文。正文和结构无关，只有标题和结构有关。一般而言，正文只有一种样式。但是也有的文档采用了多种正文样式。例如普通文字是一种，引文是一种，重点是一种。不管有几种，也都要<strong>保证正文在样式中也有对应</strong>。</li>
+</ol>
+<p>PS：样式大家不陌生，就是这个<br>
+<img src="https://ws2.sinaimg.cn/large/006tKfTcgy1g126rle7gfj30w204gaax.jpg" alt=""></p>
+<h3 id="excel">Excel</h3>
+<p>按照文档格式当中的标题等级，填充Excel。<br>
+<img src="https://ws3.sinaimg.cn/large/006tKfTcgy1g128k296naj30tu0p0wjo.jpg" alt=""><br>
+前三列为标题，分别为一、二、三级标题，没有就空着，只需要填写一次即可（第一次出现），第四列为正文，每一格正文都代表一个段落。</p>
+<p><strong>可以看做是树状的结构</strong>，例如，第三行、第四行的正文都属于行业新闻 - 昨日头条下的正文；第五行正文则属于行业新闻 - 大公司下的正文。</p>
+<p>朋友A的需求就是前三列的标题都是固定的，然后去填充正文内容。所以，只需要事先将前三列标题填好且保存，然后每日在excel中的context录入就可以了。<strong>可以将每一个标题下多插入一些空行，没问题，后面的程序遇到空值会自动跳过，如此，就不必因为某一标题下的内容过多，而需要额外再在excel中插入空行，节省操作。</strong></p>
+<h2 id="the-program">The Program</h2>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># All the packages I used</span></span><br><span class="line"><span class="keyword">library</span>(lubridate)</span><br><span class="line"><span class="keyword">library</span>(officer)</span><br><span class="line"><span class="keyword">library</span>(stringr)</span><br><span class="line"><span class="keyword">library</span>(tidyverse)</span><br><span class="line"><span class="keyword">library</span>(magrittr)</span><br></pre></td></tr></table></figure>
+<p>officer中采用<code>read_docx()</code>来创建一个R Object，名为rdocx。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">my_doc &lt;- read_docx() <span class="comment"># 新的rdocx对象</span></span><br><span class="line">styles_info(my_doc)   <span class="comment"># 查看文档的style信息</span></span><br></pre></td></tr></table></figure>
+<p>注意：style信息是非常重要的，可以说Word排版大部分精髓都在这里，这里的style<strong>包含了</strong>Word中的<strong>样式</strong>，如下图所示：<br>
+<img src="https://ws2.sinaimg.cn/large/006tKfTcgy1g126rle7gfj30w204gaax.jpg" alt=""></p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># read_docx可以读取已存在的word文件</span></span><br><span class="line">my_doc &lt;- read_docx(<span class="string">'raw_word.docx'</span>)</span><br><span class="line"><span class="comment"># 此处以我的文档为例</span></span><br><span class="line">&gt; styles_info(my_doc)</span><br><span class="line">   style_type style_id             style_name is_custom is_default</span><br><span class="line"><span class="number">1</span>   paragraph       a0                 Normal     <span class="literal">FALSE</span>       <span class="literal">TRUE</span></span><br><span class="line"><span class="number">2</span>   paragraph        <span class="number">1</span>              heading <span class="number">1</span>     <span class="literal">FALSE</span>      <span class="literal">FALSE</span></span><br><span class="line"><span class="number">3</span>   paragraph        <span class="number">2</span>              heading <span class="number">2</span>     <span class="literal">FALSE</span>      <span class="literal">FALSE</span></span><br><span class="line"><span class="number">4</span>   paragraph        <span class="number">3</span>              heading <span class="number">3</span>     <span class="literal">FALSE</span>      <span class="literal">FALSE</span></span><br><span class="line"><span class="number">5</span>   paragraph        <span class="number">4</span>              heading <span class="number">4</span>     <span class="literal">FALSE</span>      <span class="literal">FALSE</span></span><br><span class="line"><span class="number">6</span>   paragraph        <span class="number">5</span>              heading <span class="number">5</span>     <span class="literal">FALSE</span>      <span class="literal">FALSE</span></span><br><span class="line"><span class="number">7</span>   paragraph        <span class="number">6</span>              heading <span class="number">6</span>     <span class="literal">FALSE</span>      <span class="literal">FALSE</span></span><br><span class="line"><span class="number">8</span>   paragraph        <span class="number">7</span>              heading <span class="number">7</span>     <span class="literal">FALSE</span>      <span class="literal">FALSE</span></span><br><span class="line"><span class="number">9</span>   paragraph        <span class="number">8</span>              heading <span class="number">8</span>     <span class="literal">FALSE</span>      <span class="literal">FALSE</span></span><br><span class="line"><span class="number">10</span>  paragraph        <span class="number">9</span>              heading <span class="number">9</span>     <span class="literal">FALSE</span>      <span class="literal">FALSE</span></span><br><span class="line"><span class="number">11</span>  character       a2 Default Paragraph Font     <span class="literal">FALSE</span>       <span class="literal">TRUE</span></span><br><span class="line"><span class="number">12</span>      table       a3           Normal Table     <span class="literal">FALSE</span>       <span class="literal">TRUE</span></span><br><span class="line"><span class="number">13</span>  numbering       a4                No List     <span class="literal">FALSE</span>       <span class="literal">TRUE</span></span><br><span class="line"><span class="number">14</span>  paragraph       a1         List Paragraph     <span class="literal">FALSE</span>      <span class="literal">FALSE</span></span><br><span class="line"><span class="number">15</span>  paragraph       a5           Normal (Web)     <span class="literal">FALSE</span>      <span class="literal">FALSE</span></span><br><span class="line"><span class="number">16</span>  character       a6                 Strong     <span class="literal">FALSE</span>      <span class="literal">FALSE</span></span><br><span class="line"><span class="number">17</span>  paragraph       a7                 header     <span class="literal">FALSE</span>      <span class="literal">FALSE</span></span><br><span class="line"><span class="number">18</span>  character       a8              页眉 字符      <span class="literal">TRUE</span>      <span class="literal">FALSE</span></span><br><span class="line"><span class="number">19</span>  paragraph       a9                 footer     <span class="literal">FALSE</span>      <span class="literal">FALSE</span></span><br><span class="line"><span class="number">20</span>  character       aa              页脚 字符      <span class="literal">TRUE</span>      <span class="literal">FALSE</span></span><br><span class="line"><span class="number">21</span>  paragraph       ab           Balloon Text     <span class="literal">FALSE</span>      <span class="literal">FALSE</span></span><br><span class="line"><span class="number">22</span>  character       ac        批注框文本 字符      <span class="literal">TRUE</span>      <span class="literal">FALSE</span></span><br><span class="line"><span class="number">23</span>  paragraph       ad                  Title     <span class="literal">FALSE</span>      <span class="literal">FALSE</span></span><br><span class="line"><span class="number">24</span>  character       ae              标题 字符      <span class="literal">TRUE</span>      <span class="literal">FALSE</span></span><br><span class="line"><span class="number">25</span>  character       <span class="number">10</span>            标题 <span class="number">1</span> 字符      <span class="literal">TRUE</span>      <span class="literal">FALSE</span></span><br><span class="line"><span class="number">26</span>  character       <span class="number">20</span>            标题 <span class="number">2</span> 字符      <span class="literal">TRUE</span>      <span class="literal">FALSE</span></span><br><span class="line"><span class="number">27</span>  character       <span class="number">30</span>            标题 <span class="number">3</span> 字符      <span class="literal">TRUE</span>      <span class="literal">FALSE</span></span><br><span class="line"><span class="number">28</span>  paragraph        a             No Spacing     <span class="literal">FALSE</span>      <span class="literal">FALSE</span></span><br><span class="line"><span class="number">29</span>  character       <span class="number">40</span>            标题 <span class="number">4</span> 字符      <span class="literal">TRUE</span>      <span class="literal">FALSE</span></span><br><span class="line"><span class="number">30</span>  character       <span class="number">50</span>            标题 <span class="number">5</span> 字符      <span class="literal">TRUE</span>      <span class="literal">FALSE</span></span><br><span class="line"><span class="number">31</span>  character       <span class="number">60</span>            标题 <span class="number">6</span> 字符      <span class="literal">TRUE</span>      <span class="literal">FALSE</span></span><br><span class="line"><span class="number">32</span>  character       <span class="number">70</span>            标题 <span class="number">7</span> 字符      <span class="literal">TRUE</span>      <span class="literal">FALSE</span></span><br><span class="line"><span class="number">33</span>  character       <span class="number">80</span>            标题 <span class="number">8</span> 字符      <span class="literal">TRUE</span>      <span class="literal">FALSE</span></span><br><span class="line"><span class="number">34</span>  character       <span class="number">90</span>            标题 <span class="number">9</span> 字符      <span class="literal">TRUE</span>      <span class="literal">FALSE</span></span><br></pre></td></tr></table></figure>
+<p>比较重要的是<code>style_type</code>and<code>style_name</code>，<code>style_type</code>反映的是样式的类型，<code>paragraph</code>就是word中的<strong>样式</strong>了，也是我们会用到最多的。<code>style_name</code>在后面会用到，添加文字时设定样式时用<code>style_name</code>来指定。举例而言：正文就是Normal，一级标题就是heading 1，主标题就是Title。</p>
+<p>接下来是我的具体操作方式：<br>
+首先读取原始word文档，该文档包含了你所设定好的标题等级、页眉页脚、字体格式等等，只不过内容是我们不需要的，替换更新。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 读取原始文档</span></span><br><span class="line">my_doc &lt;- read_docx(<span class="string">'raw_word.docx'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将原始文档的文字全部删除</span></span><br><span class="line"><span class="keyword">for</span>(i <span class="keyword">in</span> <span class="number">1</span>:(length(my_doc) - <span class="number">1</span>)) &#123;</span><br><span class="line">  body_remove(my_doc)</span><br><span class="line">  cursor_end(my_doc)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>介绍下officer包的几个常见操作</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 添加段落（paragraph），所有的文字都是以body_add_par函数添加</span></span><br><span class="line"><span class="comment"># value是添加的内容，style用于指定格式</span></span><br><span class="line"><span class="comment"># style可以是主标题、正文、1级标题、2级标题等等，和styles_info中一致</span></span><br><span class="line">my_doc &lt;- my_doc %&gt;% </span><br><span class="line">    body_add_par(value = <span class="string">"XXX"</span>, style = <span class="string">"heading 1"</span>) </span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加目录</span></span><br><span class="line">my_doc &lt;- my_doc %&gt;% </span><br><span class="line">    body_add_toc(level = <span class="number">2</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加隔页符（下一页）</span></span><br><span class="line">my_doc &lt;- my_doc %&gt;% </span><br><span class="line">    body_add_break()</span><br></pre></td></tr></table></figure>
+<p>设定标题</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 添加标题，Title</span></span><br><span class="line"><span class="comment"># 今天的日期</span></span><br><span class="line">today_string &lt;- str_c(year(today()), <span class="string">'年'</span>, </span><br><span class="line">                      month(today()), <span class="string">'月'</span>,</span><br><span class="line">                      day(today()), <span class="string">'日 '</span>, </span><br><span class="line">                      weekdays(today()), </span><br><span class="line">                      <span class="string">' 今日新闻'</span>)</span><br><span class="line">my_doc &lt;- my_doc %&gt;%</span><br><span class="line">  body_add_par(value = today_string, style = <span class="string">'Title'</span>)</span><br></pre></td></tr></table></figure>
+<p>从Excel中读取之前搜集的文字数据，csv格式：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">&gt; data &lt;- read_csv(<span class="string">"data_test_2.csv"</span>)</span><br><span class="line">Parsed with column specification:</span><br><span class="line">cols(</span><br><span class="line">  heading_1 = col_character(),</span><br><span class="line">  heading_2 = col_character(),</span><br><span class="line">  heading_3 = col_character(),</span><br><span class="line">  context = col_character()</span><br><span class="line">)</span><br><span class="line">&gt; data</span><br><span class="line"><span class="comment"># A tibble: 15 x 4</span></span><br><span class="line">   heading_1 heading_2 heading_3 context                                                         </span><br><span class="line">   &lt;chr&gt;     &lt;chr&gt;     &lt;chr&gt;     &lt;chr&gt;                                                           </span><br><span class="line"> <span class="number">1</span> 行业新闻  昨日头条  <span class="literal">NA</span>        正文<span class="number">1</span>                                                           </span><br><span class="line"> <span class="number">2</span> <span class="literal">NA</span>        <span class="literal">NA</span>        <span class="literal">NA</span>        正文<span class="number">2</span>                                                           </span><br><span class="line"> <span class="number">3</span> <span class="literal">NA</span>        <span class="literal">NA</span>        <span class="literal">NA</span>        正文<span class="number">3</span>                                                           </span><br><span class="line"> <span class="number">4</span> <span class="literal">NA</span>        大公司    <span class="literal">NA</span>        行整合，提升线上线下药品销售的体验，加速在数字零售领域的创新与发展。这是微软今年布局大健康产业的第一步，与谷歌、苹果相比，微软…</span><br><span class="line"> <span class="number">5</span> <span class="literal">NA</span>        <span class="literal">NA</span>        <span class="literal">NA</span>        微博斥资<span class="number">3.5</span>亿元人民币投资无他相机。完成交易后，天鸽互动与微博分别持有无他所属公司股份<span class="number">51.2</span>%、<span class="number">34.8</span>%。此外，新浪香港…</span><br><span class="line"> <span class="number">6</span> 市场概况  宏观预期  <span class="literal">NA</span>        我国全行业对外直接投资<span class="number">1298.3</span>亿美元，同比增长<span class="number">4.2</span>%。其中，对外金融类直接投…</span><br><span class="line"> <span class="number">7</span> <span class="literal">NA</span>        <span class="literal">NA</span>        <span class="literal">NA</span>        度引爆市场、总募集规模高                                        </span><br><span class="line"> <span class="number">8</span> <span class="literal">NA</span>        外汇      <span class="literal">NA</span>        <span class="number">321321</span>                                                          </span><br><span class="line"> <span class="number">9</span> <span class="literal">NA</span>        A股市场   <span class="literal">NA</span>        ffdasf                                                          </span><br><span class="line"><span class="number">10</span> 国际市场  北美      美国市场  正文<span class="number">1</span>                                                           </span><br><span class="line"><span class="number">11</span> <span class="literal">NA</span>        <span class="literal">NA</span>        美国经济  正文<span class="number">2</span>                                                           </span><br><span class="line"><span class="number">12</span> <span class="literal">NA</span>        欧洲      欧洲股市  ceshi                                                           </span><br><span class="line"><span class="number">13</span> <span class="literal">NA</span>        日韩      日韩股市  fdasfdasfdas                                                    </span><br><span class="line"><span class="number">14</span> 大宗商品  黄金      <span class="literal">NA</span>        正文黄金                                                        </span><br><span class="line"><span class="number">15</span> <span class="literal">NA</span>        石油      <span class="literal">NA</span>        正文石油</span><br></pre></td></tr></table></figure>
+<p>正文写入<br>
+对于具体的实现，肯定有其他方式，这里我根据我的理解以及结合数据搜集的特点，采用了矩阵 + 遍历的方式，<strong>in order to finish the task as soon as possible</strong>，期待大神优化和指点。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">m &lt;- as.matrix(data)</span><br><span class="line">n &lt;- dim(m)[<span class="number">1</span>]            <span class="comment"># 行数</span></span><br><span class="line"><span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1</span>:n) &#123;</span><br><span class="line">  <span class="keyword">for</span> (j <span class="keyword">in</span> seq(<span class="number">4</span>)) &#123;     <span class="comment"># 总共就4列，前3列为三级标题，第4列为正文</span></span><br><span class="line">    <span class="keyword">if</span> (is.na(m[i, j])) &#123; <span class="comment"># 空值跳过</span></span><br><span class="line">      <span class="keyword">next</span></span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (j %% <span class="number">4</span> == <span class="number">1</span>) &#123;  <span class="comment"># 如果是第一列，heading 1</span></span><br><span class="line">      <span class="keyword">if</span> (i != <span class="number">1</span>) &#123; <span class="comment"># 除了第一个一级标题外，其余一级标题和前文之间空一行</span></span><br><span class="line">        my_doc &lt;- my_doc %&gt;%</span><br><span class="line">          body_add_par(value = <span class="string">'\n'</span>)</span><br><span class="line">      &#125; </span><br><span class="line">      my_doc &lt;- my_doc %&gt;%</span><br><span class="line">        body_add_par(value = m[i, j], style = <span class="string">'heading 1'</span>)</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (j %% <span class="number">4</span> == <span class="number">2</span>) &#123;  <span class="comment"># 如果是第二列，heading 2</span></span><br><span class="line">      <span class="keyword">if</span> (is.na(m[i, j - <span class="number">1</span>]))&#123; <span class="comment"># 如果紧跟着一级标题，二级标题不空行</span></span><br><span class="line">        my_doc &lt;- my_doc %&gt;%</span><br><span class="line">          body_add_par(value = <span class="string">'\n'</span>)</span><br><span class="line">      &#125;</span><br><span class="line">      my_doc &lt;- my_doc %&gt;%</span><br><span class="line">        body_add_par(value = m[i, j], style = <span class="string">'heading 2'</span>)</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (j %% <span class="number">4</span> == <span class="number">3</span>) &#123;  <span class="comment"># 如果是第三列，heading 3</span></span><br><span class="line">      <span class="keyword">if</span> (is.na(m[i, j - <span class="number">1</span>]))&#123; <span class="comment"># 如果紧跟着二级标题，三级标题不空行</span></span><br><span class="line">        my_doc &lt;- my_doc %&gt;%</span><br><span class="line">          body_add_par(value = <span class="string">'\n'</span>)</span><br><span class="line">      &#125;</span><br><span class="line">      my_doc &lt;- my_doc %&gt;%</span><br><span class="line">        body_add_par(value = m[i, j], style = <span class="string">'heading 3'</span>)</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (j %% <span class="number">4</span> == <span class="number">0</span>) &#123;  <span class="comment"># 如果是第四列，正文</span></span><br><span class="line">      my_doc &lt;- my_doc %&gt;%</span><br><span class="line">        body_add_par(value = m[i, j], style = <span class="string">'No Spacing'</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>文档输出</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">print(my_doc, target = <span class="string">'result.docx'</span>)</span><br></pre></td></tr></table></figure>
+<p>就测试数据而言，最终得到的测试文档docx如下图所示：<br>
+<img src="https://ws2.sinaimg.cn/large/006tKfTcgy1g127t0p71cj30u010vwi1.jpg" alt=""><br>
+<img src="https://ws1.sinaimg.cn/large/006tKfTcgy1g127trhx0qj30u0113jsp.jpg" alt=""><br>
+标题、字体、页眉页脚都与原文档一致，而正文内容也得到了相应的填充。</p>
+<h2 id="流程梳理">流程梳理</h2>
+<p>所以，最终的流程如下：</p>
+<ol>
+<li>打开预先设置好的excel表格，将搜集或编辑的文字贴入excel。</li>
+<li>运行程序</li>
+<li>得到排版好的word</li>
+</ol>
+<h1 id="反思与探索">反思与探索</h1>
+<h2 id="反思1">反思1</h2>
+<p>如果只是固定的标题模板，个人认为<strong>利用R和手动这两种方式差别不大</strong>，因为手动的话，只要事先把<strong>正文清空而标题保留的docx保存</strong>，下次再写的时候，复制粘贴编辑即可**（粘贴可在word中设定为只粘贴为纯文本，如此粘贴进来的文字自动就匹配文档格式了）**，也没什么麻烦的。</p>
+<p>甚至，直接用word也没什么麻烦的。（😭 那我写这个文章干嘛？唉，介绍下officer这个包还是可以的，强行有用）直接用Word：</p>
+<ol>
+<li>首先定义好各级标题样式、正文样式</li>
+<li><strong>关键</strong>: 设定好常用的几个样式的快捷键，例如Alt + 1，Alt + M等。可以做到不亚于Markdown的输入流畅度（但是代码是不行了，比不过）。</li>
+<li>开心地去写吧。</li>
+</ol>
+<p><strong>在这一点上，我不想欺骗自己，发现折腾了一下，和快手耿哥一样：尽是搞一些没什么卵用的东西。</strong></p>
+<h2 id="反思2">反思2</h2>
+<p>但是如果大纲模板不固定，这个方法可能稍许方便一些。例如，我的标题不再是什么行业新闻、市场概况，而是别的内容，如摘要、论文等等。<br>
+<img src="https://ws3.sinaimg.cn/large/006tKfTcgy1g129jx9bxtj30oi0h241p.jpg" alt=""><br>
+<img src="https://ws1.sinaimg.cn/large/006tKfTcgy1g129nc72abj319n0u0ju9.jpg" alt=""></p>
+<p><strong>我实在是编不下去了，没看出有什么方便的地方。</strong></p>
+<h2 id="反思3">反思3</h2>
+<p>其实一开始我以为需求是，文档文字内容固定，然后其中一些数值发生变化，比如当日股价收盘价XXX，涨幅XXX，当日黄金价格XXX。我觉得这种方式用工作流会有用一些。</p>
+<p>比如，一个Excel中录入当日的这些数字，或者要替换的文字，然后运行程序，进行替换。这样效率比较高，因为如果手工进行，需要找到每个数值的位置，然后一次只能粘贴一个，效率就很低了。</p>
+<p>我觉得应该是没问题的，officer中有光标定位函数、有替换函数，结合R字符处理函数，应该可以实现。</p>
+<h2 id="反思4">反思4</h2>
+<p>暂时没有考虑图片和表格的情况。但是officer中是可以添加图片和表格的。</p>
+<p>excel中只能录入文字，如果遇到其他格式的内容怎么办？因为朋友A的文档里没那么多复杂的东西，所以就没考虑那么多了。</p>
+<h2 id="last-but-not-least">Last but not least</h2>
+<p>本文借助一个工作中的小例子，简要介绍了officer package的用法，探索了R与Word协作的可能性，<strong>妄想了一种日报周报自动化文档的工作流程。</strong></p>
+<p>还有很多可以探索与学习的地方，权当抛砖引玉，欢迎大家一起交流，恳请大神不吝指教。</p>
+
+                
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                    
+                        <li class="next">
+                            <a href="/article/TE-2019-04-23/" data-toggle="tooltip" data-placement="top" title="[TE Daily] 2019-04-23 Day34">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <br>
+
+                <!--打赏-->
+                
+                <!--打赏-->
+
+                <br>
+                <!--分享-->
+                
+                    <div class="social-share"  data-wechat-qrcode-helper="" align="center"></div>
+                    <!--  css & js -->
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
+                
+                <!--分享-->
+                <br>                       
+                
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#package-officer利用r撰写word自动化文档输出-抛砖引玉"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">&#x3010;package officer&#x3011;&#x5229;&#x7528;R&#x64B0;&#x5199;word&#xFF0C;&#x81EA;&#x52A8;&#x5316;&#x6587;&#x6863;&#x8F93;&#x51FA; &#x2014;&#x2014; &#x629B;&#x7816;&#x5F15;&#x7389;</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#package-officer介绍"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">Package Officer&#x4ECB;&#x7ECD;</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#工作流程"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">&#x5DE5;&#x4F5C;&#x6D41;&#x7A0B;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#准备工作"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text">&#x51C6;&#x5907;&#x5DE5;&#x4F5C;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#word"><span class="toc-nav-number">3.1.1.</span> <span class="toc-nav-text">Word</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#excel"><span class="toc-nav-number">3.1.2.</span> <span class="toc-nav-text">Excel</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#the-program"><span class="toc-nav-number">3.2.</span> <span class="toc-nav-text">The Program</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#流程梳理"><span class="toc-nav-number">3.3.</span> <span class="toc-nav-text">&#x6D41;&#x7A0B;&#x68B3;&#x7406;</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#反思与探索"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">&#x53CD;&#x601D;&#x4E0E;&#x63A2;&#x7D22;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#反思1"><span class="toc-nav-number">4.1.</span> <span class="toc-nav-text">&#x53CD;&#x601D;1</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#反思2"><span class="toc-nav-number">4.2.</span> <span class="toc-nav-text">&#x53CD;&#x601D;2</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#反思3"><span class="toc-nav-number">4.3.</span> <span class="toc-nav-text">&#x53CD;&#x601D;3</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#反思4"><span class="toc-nav-number">4.4.</span> <span class="toc-nav-text">&#x53CD;&#x601D;4</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#last-but-not-least"><span class="toc-nav-number">4.5.</span> <span class="toc-nav-text">Last but not least</span></a></li></ol></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#R" title="R">R</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://www.zhihu.com/people/njwkno1021/activities" target="_blank">知乎 NjWkNo1021</a></li>
+                    
+                        <li><a href="https://www.jianshu.com/u/6c7451cd2181" target="_blank">简书 FrankZgq</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/frankzhougq">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Frank Zhou 2019 
+                    <br>
+                    Theme by <a href="http://beantech.org">BeanTech</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="http://www.huweihuang.com">胡伟煌</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huweihuang&repo=hexo-theme-huweihuang&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://www.huweihuang.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'xxx';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://www.huweihuang.com/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
