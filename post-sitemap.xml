@@ -7,8 +7,24 @@
     </url>
 
     <url>
+        <loc>http://www.huweihuang.com/article/test/</loc>
+        <lastmod>2020-02-03T23:38:59.327Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://www.huweihuang.com/article/test-md/</loc>
+        <lastmod>2020-02-03T23:05:18.082Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
         <loc>http://www.huweihuang.com/article/TE-2019-06-08/</loc>
-        <lastmod>2019-06-08T06:07:52.535Z</lastmod>
+        <lastmod>2019-06-08T06:08:35.301Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
